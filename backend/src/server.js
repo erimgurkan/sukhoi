@@ -45,12 +45,15 @@ app.use('/api/presale', presaleRoutes);
 // GET /api/health - Public health status check
 app.get('/api/health', async (req, res) => {
   const isPaused = await blockchainService.isPaused();
+  const mongoose = require('mongoose');
   res.status(200).json({
     status: 'ok',
     timestamp: Date.now(),
     uptime: process.uptime(),
     contractAddress: blockchainService.contractAddress,
-    isPaused
+    isPaused,
+    dbConnected: mongoose.connection.readyState === 1,
+    dbName: mongoose.connection.name
   });
 });
 
