@@ -1,4 +1,4 @@
-const API_BASE = '/api';
+const API_BASE = 'https://sukhoi.onrender.com/api';
 
 async function handleResponse(response) {
   const data = await response.json();

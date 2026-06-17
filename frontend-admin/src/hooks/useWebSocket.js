@@ -15,7 +15,7 @@ export function useWebSocket() {
     if (socketRef.current) return;
 
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws`;
+    const wsUrl = 'wss://sukhoi.onrender.com';
     
     const socket = new WebSocket(wsUrl);
     socketRef.current = socket;

@@ -1,4 +1,4 @@
-const API_BASE = '/api';
+const API_BASE = 'https://sukhoi.onrender.com/api';
 
 function getHeaders() {
   const token = localStorage.getItem('sukhoi_admin_token');

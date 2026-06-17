@@ -14,8 +14,7 @@ export function useWebSocket(onTransactionReceived) {
     if (socketRef.current) return;
 
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    // Use host (e.g. localhost:5173) so the request goes through the Vite dev proxy
-    const wsUrl = `${protocol}//${window.location.host}/ws`;
+    const wsUrl = 'wss://sukhoi.onrender.com';
     
     const socket = new WebSocket(wsUrl);
     socketRef.current = socket;
