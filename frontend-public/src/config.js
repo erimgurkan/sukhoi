@@ -5,7 +5,7 @@ export let CONTRACT_ADDRESS = '';
 
 export async function loadConfig() {
   try {
-    const res = await fetch('/api/health');
+    const res = await fetch('https://sukhoi.onrender.com/api/health');
     const data = await res.json();
     if (data.contractAddress) CONTRACT_ADDRESS = data.contractAddress;
     return data;

@@ -82,27 +82,7 @@ export default function App() {
 
   return (
     <>
-      {/* Navigation Bar */}
-      <nav className="nav">
-        <Link to="/" className="nav-brand" style={{ textDecoration: 'none' }}>
-          Sukhoi <span>Chain</span>
-        </Link>
-        <div className="nav-links">
-          <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>
-            Home
-          </Link>
-          
-          {wallet.address && (
-            <Link to="/dashboard" className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}>
-              My Wallet
-            </Link>
-          )}
 
-          <Link to="/explorer" className={`nav-link ${location.pathname === '/explorer' ? 'active' : ''}`}>
-            Explorer
-          </Link>
-        </div>
-      </nav>
 
       {/* Page Routing */}
       <Routes>
