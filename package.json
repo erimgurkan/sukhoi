@@ -1,0 +1,19 @@
+{
+  "name": "sukhoi-chain",
+  "version": "1.0.0",
+  "description": "Sukhoi Chain - Private EVM Blockchain Ecosystem",
+  "private": true,
+  "scripts": {
+    "start": "node start.js",
+    "start:blockchain": "cd blockchain && npx hardhat node",
+    "deploy": "cd blockchain && npx hardhat run scripts/deploy.js --network localhost",
+    "start:backend": "cd backend && npm start",
+    "start:public": "cd frontend-public && npm run dev",
+    "start:admin": "cd frontend-admin && npm run dev",
+    "build:public": "cd frontend-public && npm run build",
+    "build:admin": "cd frontend-admin && npm run build",
+    "install:all": "cd blockchain && npm install && cd ../backend && npm install && cd ../frontend-public && npm install && cd ../frontend-admin && npm install"
+  },
+  "keywords": ["blockchain", "evm", "hardhat", "sukhoi"],
+  "license": "MIT"
+}
