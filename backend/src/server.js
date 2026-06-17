@@ -16,6 +16,9 @@ const presaleRoutes = require('./routes/presale');
 const blockchainService = require('./services/blockchain');
 const websocketService = require('./services/websocket');
 
+// Initialize Database Connection
+require('./db/database');
+
 // Initialize Express
 const app = express();
 
