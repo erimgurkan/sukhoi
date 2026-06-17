@@ -460,7 +460,6 @@ tr:hover td { background: var(--bg-card); }
 }
 .marquee-content {
   display: inline-block;
-  animation: marquee 25s linear infinite;
 }
 .marquee-content span {
   font-family: var(--font-mono);
