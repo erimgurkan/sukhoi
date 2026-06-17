@@ -986,4 +986,16 @@ tr:hover td { background: var(--bg-card); }
   }
 }
 
+/* Explorer result grid responsiveness */
+.explorer-result-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 600px) {
+  .explorer-result-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 

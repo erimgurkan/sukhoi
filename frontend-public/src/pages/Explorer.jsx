@@ -132,7 +132,7 @@ export function Explorer({ blocks, isConnected }) {
                 <span style={{ color: 'var(--text-muted)' }}>İşlem Hash:</span>
                 <div className="mono" style={{ color: 'var(--text-primary)', wordBreak: 'break-all' }}>{searchResult.data.hash}</div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div className="explorer-result-grid">
                 <div>
                   <span style={{ color: 'var(--text-muted)' }}>Gönderici:</span>
                   <div className="mono" style={{ wordBreak: 'break-all' }}>{searchResult.data.from}</div>
@@ -142,7 +142,7 @@ export function Explorer({ blocks, isConnected }) {
                   <div className="mono" style={{ wordBreak: 'break-all' }}>{searchResult.data.to}</div>
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div className="explorer-result-grid">
                 <div>
                   <span style={{ color: 'var(--text-muted)' }}>Değer / Miktar:</span>
                   <div className="mono" style={{ color: 'var(--success)', fontWeight: 600 }}>
@@ -155,7 +155,7 @@ export function Explorer({ blocks, isConnected }) {
                 </div>
               </div>
               {searchResult.receipt && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="explorer-result-grid">
                   <div>
                     <span style={{ color: 'var(--text-muted)' }}>Kullanılan Gaz:</span>
                     <div className="mono">{parseInt(searchResult.receipt.gasUsed).toLocaleString()}</div>
@@ -174,7 +174,7 @@ export function Explorer({ blocks, isConnected }) {
           {/* Block Result Details */}
           {searchResult.type === 'block' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.9rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div className="explorer-result-grid">
                 <div>
                   <span style={{ color: 'var(--text-muted)' }}>Blok Numarası:</span>
                   <div className="mono" style={{ color: 'var(--accent)', fontSize: '1.2rem', fontWeight: 700 }}>#{searchResult.data.number}</div>
@@ -192,7 +192,7 @@ export function Explorer({ blocks, isConnected }) {
                 <span style={{ color: 'var(--text-muted)' }}>Ebeveyn Hash (Parent Hash):</span>
                 <div className="mono" style={{ wordBreak: 'break-all', opacity: 0.8 }}>{searchResult.data.parentHash}</div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div className="explorer-result-grid">
                 <div>
                   <span style={{ color: 'var(--text-muted)' }}>İşlem Sayısı:</span>
                   <div className="mono">{searchResult.data.transactions ? searchResult.data.transactions.length : 0} adet</div>

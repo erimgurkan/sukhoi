@@ -548,3 +548,65 @@ body { background: var(--bg-primary); color: var(--text-primary); font-family: v
   .dashboard-grid { grid-template-columns: 1fr; }
   .stats-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
 }
+
+/* Mobile responsive considerations for screens below 768px */
+@media (max-width: 768px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    height: auto;
+    position: relative;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+  }
+  .sidebar-brand {
+    padding: 0 16px 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .sidebar-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 16px;
+  }
+  .sidebar-link {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    border-left: none;
+    border-bottom: 2px solid transparent;
+  }
+  .sidebar-link.active {
+    border-left-color: transparent;
+    border-bottom-color: var(--accent);
+  }
+  .main-content {
+    padding: 20px 12px;
+  }
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .dashboard-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .control-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .panel-body {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .data-table {
+    min-width: 600px; /* Horizontal scroll instead of squeezing columns */
+  }
+  .confirm-dialog {
+    max-width: 90% !important;
+    margin: 16px;
+  }
+}
