@@ -168,7 +168,7 @@ export function Dashboard({ wallet, refreshWallet }) {
   };
 
   return (
-    <div style={{ background: 'transparent', minHeight: '100vh', width: '100%', paddingBottom: '45px', paddingTop: '45px', overflowX: 'hidden' }}>
+    <div style={{ position: 'relative', background: 'transparent', minHeight: '100vh', width: '100%', paddingBottom: '45px', paddingTop: '45px', overflowX: 'hidden' }}>
       
       {/* Top Ticker Marquee */}
       <div className="marquee-container">
@@ -482,7 +482,7 @@ export function Dashboard({ wallet, refreshWallet }) {
       </div>
 
       {/* Bottom Ticker Marquee */}
-      <div className="marquee-container" style={{ position: 'fixed', bottom: 0, top: 'auto', borderTop: '2px solid #FFFFFF', borderBottom: 'none' }}>
+      <div className="marquee-container" style={{ position: 'absolute', bottom: 0, top: 'auto', borderTop: '2px solid #FFFFFF', borderBottom: 'none' }}>
         <div className="marquee-content">
           <span>CLIENT-SIDE SIGNING ENFORCED • PRIVATE KEYS NEVER TRANSMITTED TO SERVERS • ZERO BACKEND RETENTION • DECENTRALIZED BY DESIGN • </span>
           <span>CLIENT-SIDE SIGNING ENFORCED • PRIVATE KEYS NEVER TRANSMITTED TO SERVERS • ZERO BACKEND RETENTION • DECENTRALIZED BY DESIGN • </span>
