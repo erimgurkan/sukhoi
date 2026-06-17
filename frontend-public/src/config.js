@@ -1,6 +1,7 @@
 export const CHAIN_ID = 19735;
 export const RPC_URL = '/api';
-export const BLOCKCHAIN_RPC = 'http://localhost:8545';
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+export const BLOCKCHAIN_RPC = isLocal ? 'http://localhost:8545' : 'https://sukhoi.onrender.com/api/rpc';
 export let CONTRACT_ADDRESS = '';
 
 export async function loadConfig() {

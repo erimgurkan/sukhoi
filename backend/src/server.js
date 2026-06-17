@@ -45,6 +45,31 @@ app.use('/api/tx', txRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/presale', presaleRoutes);
 
+// POST /api/rpc - Proxy JSON-RPC requests to the local Hardhat node
+app.post('/api/rpc', async (req, res) => {
+  try {
+    const response = await fetch(config.blockchain.rpcUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(req.body),
+    });
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (err) {
+    logger.error('RPC Proxy Error:', err);
+    res.status(500).json({
+      jsonrpc: '2.0',
+      id: req.body.id || null,
+      error: {
+        code: -32603,
+        message: 'Internal JSON-RPC proxy error: ' + err.message
+      }
+    });
+  }
+});
+
 // GET /api/health - Public health status check
 app.get('/api/health', async (req, res) => {
   const isPaused = await blockchainService.isPaused();
