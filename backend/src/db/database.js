@@ -20,10 +20,7 @@ mongoose.connection.on('disconnected', () => {
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(MONGODB_URI);
   } catch (err) {
     logger.error('Failed to connect to MongoDB on startup', err);
     mongoose.connection.lastError = err.message;
