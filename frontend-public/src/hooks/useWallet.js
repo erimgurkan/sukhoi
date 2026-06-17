@@ -46,6 +46,7 @@ export function useWallet() {
       const derivedAddress = wallet.address;
       const derivedMnemonic = wallet.mnemonic.phrase;
       setMnemonic(derivedMnemonic);
+      localStorage.setItem('sukhoi_wallet_private_key', wallet.privateKey);
       return { success: true, address: derivedAddress, mnemonic: derivedMnemonic };
     } catch (err) {
       setError(err.message || 'Wallet creation failed');
@@ -71,6 +72,7 @@ export function useWallet() {
       if (checkData.success) {
         setAddress(derivedAddress);
         localStorage.setItem('sukhoi_wallet_address', derivedAddress);
+        localStorage.setItem('sukhoi_wallet_private_key', wallet.privateKey);
         setBalance(checkData.balance);
         setTransactions(checkData.transactions || []);
         return { success: true, address: derivedAddress };
@@ -93,6 +95,7 @@ export function useWallet() {
     setTransactions([]);
     setError(null);
     localStorage.removeItem('sukhoi_wallet_address');
+    localStorage.removeItem('sukhoi_wallet_private_key');
   };
 
   return {

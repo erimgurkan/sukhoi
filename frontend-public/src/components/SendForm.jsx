@@ -6,7 +6,7 @@ export function SendForm({ senderAddress, onTransactionSent }) {
   const [toAddress, setToAddress] = useState('');
   const [amount, setAmount] = useState('');
   const [message, setMessage] = useState('');
-  const [privateKey, setPrivateKey] = useState('');
+  const [privateKey, setPrivateKey] = useState(() => localStorage.getItem('sukhoi_wallet_private_key') || '');
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
@@ -76,7 +76,7 @@ export function SendForm({ senderAddress, onTransactionSent }) {
       setToAddress('');
       setAmount('');
       setMessage('');
-      setPrivateKey('');
+      setPrivateKey(localStorage.getItem('sukhoi_wallet_private_key') || '');
       
       if (onTransactionSent) {
         onTransactionSent();
