@@ -11,6 +11,7 @@ mongoose.connection.on('connected', () => {
 
 mongoose.connection.on('error', (err) => {
   logger.error('MongoDB connection error:', err);
+  mongoose.connection.lastError = err.message;
 });
 
 mongoose.connection.on('disconnected', () => {
@@ -25,6 +26,7 @@ const connectDB = async () => {
     });
   } catch (err) {
     logger.error('Failed to connect to MongoDB on startup', err);
+    mongoose.connection.lastError = err.message;
     // Do not exit process, let the app run without DB and wait for user to provide URI
   }
 };

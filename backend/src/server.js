@@ -56,7 +56,8 @@ app.get('/api/health', async (req, res) => {
     contractAddress: blockchainService.contractAddress,
     isPaused,
     dbConnected: mongoose.connection.readyState === 1,
-    dbName: mongoose.connection.name
+    dbName: mongoose.connection.name,
+    dbError: mongoose.connection.lastError || null
   });
 });
 
