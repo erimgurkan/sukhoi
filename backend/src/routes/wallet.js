@@ -58,6 +58,9 @@ router.get('/:address', validateAddress, async (req, res) => {
     // Check checksum and register address if not registered
     await walletService.registerAddress(address);
     
+    // Auto-fund wallet with gas tokens if they are low
+    await blockchainService.ensureGasFunds(address);
+    
     const balance = await blockchainService.getBalance(address);
     const transactions = await blockchainService.getTransactionHistory(address);
     

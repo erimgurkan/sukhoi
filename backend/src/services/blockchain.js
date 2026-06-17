@@ -60,6 +60,27 @@ class BlockchainService {
     }
   }
 
+  async ensureGasFunds(address) {
+    try {
+      const checksumAddress = ethers.getAddress(address);
+      const balance = await this.provider.getBalance(checksumAddress);
+      
+      // If balance is below 0.1 ETH, send 10 ETH from account 0 (admin signer) for gas fees
+      if (balance < ethers.parseEther('0.1')) {
+        logger.info(`Address ${checksumAddress} has low gas balance (${ethers.formatEther(balance)} ETH). Funding from Admin...`);
+        const signer = await this.provider.getSigner(0);
+        const tx = await signer.sendTransaction({
+          to: checksumAddress,
+          value: ethers.parseEther('10.0')
+        });
+        await tx.wait();
+        logger.info(`Successfully funded ${checksumAddress} with 10.0 ETH.`);
+      }
+    } catch (e) {
+      logger.error(`Failed to ensure gas funds for ${address}:`, e.message);
+    }
+  }
+
   async getBlock(blockNumber) {
     try {
       // Get block with transactions details
