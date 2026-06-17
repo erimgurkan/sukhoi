@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 
-export function useWebSocket() {
+export function useWebSocket(enabled = true) {
   const [blocks, setBlocks] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [networkStatus, setNetworkStatus] = useState({ isPaused: false });
@@ -15,7 +15,7 @@ export function useWebSocket() {
     if (socketRef.current) return;
 
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = 'wss://sukhoi.onrender.com';
+    const wsUrl = 'wss://sukhoi.onrender.com/ws';
     
     const socket = new WebSocket(wsUrl);
     socketRef.current = socket;
@@ -71,17 +71,20 @@ export function useWebSocket() {
   };
 
   useEffect(() => {
-    connect();
+    if (enabled) {
+      connect();
+    }
 
     return () => {
       if (socketRef.current) {
         socketRef.current.close();
+        socketRef.current = null;
       }
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
       }
     };
-  }, []);
+  }, [enabled]);
 
   return {
     blocks,

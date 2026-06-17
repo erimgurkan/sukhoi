@@ -12,8 +12,8 @@ export default function App() {
   const { isAuthenticated, loading, login, logout } = useAuth();
   const location = useLocation();
   
-  // Initialize WebSocket connection at app root
-  const ws = useWebSocket();
+  // Initialize WebSocket connection at app root only when authenticated
+  const ws = useWebSocket(isAuthenticated);
 
   if (loading) {
     return (
