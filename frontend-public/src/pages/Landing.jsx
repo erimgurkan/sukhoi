@@ -41,6 +41,7 @@ export function Landing({ address, balance, refreshBalance, createWallet, recove
 
 
   const [createError, setCreateError] = useState('');
+  const [copiedMnemonic, setCopiedMnemonic] = useState(false);
 
   const handleCreateWallet = async () => {
     setCreateLoading(true);
@@ -426,12 +427,13 @@ export function Landing({ address, balance, refreshBalance, createWallet, recove
                                   <button 
                                     onClick={() => {
                                       navigator.clipboard.writeText(generatedMnemonic);
-                                      alert("Seed phrase copied to clipboard!");
+                                      setCopiedMnemonic(true);
+                                      setTimeout(() => setCopiedMnemonic(false), 2000);
                                     }} 
                                     className="cyber-btn" 
-                                    style={{ width: '100%', padding: '6px', fontSize: '0.75rem', marginTop: '6px', borderColor: '#444' }}
+                                    style={{ width: '100%', padding: '6px', fontSize: '0.75rem', marginTop: '6px', borderColor: copiedMnemonic ? '#00c2ff' : '#444', color: copiedMnemonic ? '#00c2ff' : '#fff' }}
                                   >
-                                    COPY SEED PHRASE
+                                    {copiedMnemonic ? "COPIED TO CLIPBOARD!" : "COPY SEED PHRASE"}
                                   </button>
                                 )}
                               </div>

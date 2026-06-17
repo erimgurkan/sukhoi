@@ -20,6 +20,32 @@ export function Dashboard({ blocks, transactions, networkStatus, isConnected, cl
   const [quickLoading, setQuickLoading] = useState(false);
   const [quickFeedback, setQuickFeedback] = useState(null);
 
+  // Custom modal for alerts/confirms to avoid browser alerts
+  const [customModal, setCustomModal] = useState(null);
+
+  const showConfirm = (title, message, onConfirm) => {
+    setCustomModal({
+      type: 'confirm',
+      title,
+      message,
+      onConfirm: () => {
+        onConfirm();
+        setCustomModal(null);
+      },
+      onCancel: () => setCustomModal(null)
+    });
+  };
+
+  const showAlert = (title, message) => {
+    setCustomModal({
+      type: 'alert',
+      title,
+      message,
+      onConfirm: () => setCustomModal(null),
+      onCancel: () => setCustomModal(null)
+    });
+  };
+
   // Fetch admin metrics from API
   const fetchStats = async () => {
     try {
@@ -217,15 +243,20 @@ export function Dashboard({ blocks, transactions, networkStatus, isConnected, cl
   };
 
   const handleBanWallet = async (address) => {
-    if (!window.confirm(`${address} adresli cüzdanı banlamak istediğinize emin misiniz?`)) return;
-    try {
-      const data = await api.banWallet(address);
-      if (data.success) {
-        await fetchWallets();
+    showConfirm(
+      'Cüzdan Banla',
+      `${address} adresli cüzdanı banlamak istediğinize emin misiniz?`,
+      async () => {
+        try {
+          const data = await api.banWallet(address);
+          if (data.success) {
+            await fetchWallets();
+          }
+        } catch (err) {
+          showAlert('Banlama Başarısız', err.message || 'Banlama başarısız oldu.');
+        }
       }
-    } catch (err) {
-      alert(err.message || 'Banlama başarısız oldu.');
-    }
+    );
   };
 
   const handleUnbanWallet = async (address) => {
@@ -235,21 +266,26 @@ export function Dashboard({ blocks, transactions, networkStatus, isConnected, cl
         await fetchWallets();
       }
     } catch (err) {
-      alert(err.message || 'Ban kaldırma başarısız oldu.');
+      showAlert('Ban Kaldırma Başarısız', err.message || 'Ban kaldırma başarısız oldu.');
     }
   };
 
   const handleDeleteWallet = async (address) => {
-    if (!window.confirm(`DİKKAT: ${address} adresli cüzdan sistemden tamamen silinecek. Emin misiniz?`)) return;
-    try {
-      const data = await api.deleteWallet(address);
-      if (data.success) {
-        await fetchWallets();
-        await fetchStats();
+    showConfirm(
+      'Cüzdan Sil (Temizle)',
+      `DİKKAT: ${address} adresli cüzdan sistemden tamamen silinecek. Emin misiniz?`,
+      async () => {
+        try {
+          const data = await api.deleteWallet(address);
+          if (data.success) {
+            await fetchWallets();
+            await fetchStats();
+          }
+        } catch (err) {
+          showAlert('Silme Başarısız', err.message || 'Silme başarısız oldu.');
+        }
       }
-    } catch (err) {
-      alert(err.message || 'Silme başarısız oldu.');
-    }
+    );
   };
 
   const truncateHash = (hash) => `${hash.substring(0, 8)}...${hash.substring(hash.length - 8)}`;
@@ -723,6 +759,47 @@ export function Dashboard({ blocks, transactions, networkStatus, isConnected, cl
           </table>
         </div>
       </div>
+      
+      {customModal && (
+        <div className="confirm-overlay" style={{ animation: 'fadeIn 0.2s ease' }}>
+          <div className="confirm-dialog" style={{ maxWidth: '440px', padding: '30px', background: 'var(--bg-secondary)', border: '2px solid var(--border)' }}>
+            <h3 style={{ fontSize: '0.95rem', color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px' }}>
+              {customModal.title}
+            </h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '24px', lineHeight: '1.6', wordBreak: 'break-all' }}>
+              {customModal.message}
+            </p>
+            <div className="confirm-actions">
+              {customModal.type === 'confirm' ? (
+                <>
+                  <button 
+                    onClick={customModal.onCancel} 
+                    className="admin-btn admin-btn-sm"
+                    style={{ padding: '6px 16px' }}
+                  >
+                    İptal
+                  </button>
+                  <button 
+                    onClick={customModal.onConfirm} 
+                    className="admin-btn admin-btn-sm admin-btn-primary"
+                    style={{ padding: '6px 16px' }}
+                  >
+                    Onayla
+                  </button>
+                </>
+              ) : (
+                <button 
+                  onClick={customModal.onConfirm} 
+                  className="admin-btn admin-btn-sm admin-btn-primary"
+                  style={{ padding: '6px 16px' }}
+                >
+                  Tamam
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
