@@ -197,6 +197,10 @@ class BlockchainService {
         allEvents.sort((a, b) => a.blockNumber - b.blockNumber);
         
         for (const event of allEvents) {
+          // Skip burn events (transfers to address(0)) to avoid duplicate rows for message fees
+          if (event.args[1] === '0x0000000000000000000000000000000000000000') {
+            continue;
+          }
           const block = await this.provider.getBlock(event.blockNumber);
           let message = '';
           let fee = '0';
@@ -257,6 +261,10 @@ class BlockchainService {
     if (!this.contract) return;
     
     this.contract.on('Transfer', async (from, to, value, event) => {
+      // Skip burn events (transfers to address(0)) to avoid double notifications/duplicates
+      if (to === '0x0000000000000000000000000000000000000000') {
+        return;
+      }
       try {
         const block = await this.provider.getBlock(event.log.blockNumber);
         let message = '';
