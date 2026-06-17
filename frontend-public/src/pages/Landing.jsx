@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 
 export function Landing({ address, balance, refreshBalance, createWallet, recoverWallet, mnemonic, latestBlock, connectedClients }) {
+  const navigate = useNavigate();
   const [flowState, setFlowState] = useState('landing'); // 'landing', 'create', 'recover'
   const [created, setCreated] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [createLoading, setCreateLoading] = useState(false);
+  const [createProgress, setCreateProgress] = useState(0);
+  const [connectLoading, setConnectLoading] = useState(false);
   
   const [recoverPhrase, setRecoverPhrase] = useState('');
   const [recoverError, setRecoverError] = useState('');
@@ -41,8 +45,29 @@ export function Landing({ address, balance, refreshBalance, createWallet, recove
   const handleCreateWallet = async () => {
     setCreateLoading(true);
     setCreateError('');
+    setCreateProgress(0);
+
+    const duration = 1500; // 1.5s animation duration
+    const step = 30; // interval step in ms
+    const increment = (step / duration) * 100;
+
+    const progressTimer = setInterval(() => {
+      setCreateProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(progressTimer);
+          return 100;
+        }
+        return prev + increment;
+      });
+    }, step);
+
     try {
+      // Create wallet completely client-side in the browser using ethers
       const res = await createWallet();
+
+      // Wait for progress bar animation to complete
+      await new Promise((resolve) => setTimeout(resolve, duration + 100));
+
       if (res && res.mnemonic) {
         setGeneratedMnemonic(res.mnemonic);
         setCreated(true);
@@ -51,6 +76,7 @@ export function Landing({ address, balance, refreshBalance, createWallet, recove
       }
     } catch (err) {
       console.error(err);
+      clearInterval(progressTimer);
       setCreateError(err.message || 'Exceeded wallet limit or server connection error.');
     } finally {
       setCreateLoading(false);
@@ -59,12 +85,16 @@ export function Landing({ address, balance, refreshBalance, createWallet, recove
 
   const handleConnectCreatedWallet = async () => {
     if (!generatedMnemonic) return;
+    setConnectLoading(true);
+    setCreateError('');
     try {
       await recoverWallet(generatedMnemonic);
       navigateToDashboard();
     } catch (err) {
       console.error(err);
       setCreateError(err.message || 'Failed to login with generated wallet.');
+    } finally {
+      setConnectLoading(false);
     }
   };
 
@@ -75,16 +105,19 @@ export function Landing({ address, balance, refreshBalance, createWallet, recove
       setRecoverError('Mnemonic seed phrase cannot be empty.');
       return;
     }
+    setConnectLoading(true);
     try {
       await recoverWallet(recoverPhrase.trim().replace(/\s+/g, ' '));
       navigateToDashboard();
     } catch (err) {
       setRecoverError(err.message || 'Recovery failed. Verify your mnemonic words.');
+    } finally {
+      setConnectLoading(false);
     }
   };
 
   const navigateToDashboard = () => {
-    window.location.href = '/dashboard';
+    navigate('/dashboard');
   };
 
 
@@ -341,14 +374,29 @@ export function Landing({ address, balance, refreshBalance, createWallet, recove
                               <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                                 Clicking the button below generates a unique, browser-secured 12-word recovery phrase. Make sure you are in a private environment.
                               </p>
-                              <button 
-                                onClick={handleCreateWallet} 
-                                className="cyber-btn cyber-btn-primary"
-                                disabled={createLoading}
-                                style={{ width: '100%', padding: '10px' }}
-                              >
-                                {createLoading ? 'GENERATING ADDRESS...' : 'GENERATE NEW SEED'}
-                              </button>
+                              {createLoading ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '8px 0' }}>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontFamily: 'var(--font-mono)' }}>
+                                    <span style={{ color: '#00E676' }}>GATHERING ENTROPY...</span>
+                                    <span style={{ color: '#00E676' }}>{Math.round(createProgress)}%</span>
+                                  </div>
+                                  <div className="cyber-progress-bg" style={{ height: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)' }}>
+                                    <div className="cyber-progress-fill" style={{ width: `${createProgress}%`, height: '100%', background: '#0052FF', transition: 'width 0.05s ease-out' }}></div>
+                                  </div>
+                                  <span style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', textAlign: 'center', fontFamily: 'var(--font-mono)' }}>
+                                    SECURELY DERIVING CRYPTOGRAPHIC KEYPAIR...
+                                  </span>
+                                </div>
+                              ) : (
+                                <button 
+                                  onClick={handleCreateWallet} 
+                                  className="cyber-btn cyber-btn-primary"
+                                  disabled={createLoading}
+                                  style={{ width: '100%', padding: '10px' }}
+                                >
+                                  GENERATE NEW SEED
+                                </button>
+                              )}
                               {createError && <p style={{ color: 'var(--error)', fontSize: '0.8rem', marginTop: '4px', textAlign: 'center', fontWeight: 'bold' }}>{createError}</p>}
                             </div>
                           ) : (
@@ -393,6 +441,7 @@ export function Landing({ address, balance, refreshBalance, createWallet, recove
                                   type="checkbox" 
                                   id="landing-confirm"
                                   checked={confirmed}
+                                  disabled={connectLoading}
                                   onChange={(e) => setConfirmed(e.target.checked)}
                                   style={{ marginTop: '2px' }}
                                 />
@@ -404,10 +453,10 @@ export function Landing({ address, balance, refreshBalance, createWallet, recove
                               <button 
                                 onClick={handleConnectCreatedWallet}
                                 className="cyber-btn cyber-btn-primary"
-                                disabled={!confirmed}
+                                disabled={!confirmed || connectLoading}
                                 style={{ width: '100%', padding: '10px' }}
                               >
-                                CONNECT & GO TO DASHBOARD
+                                {connectLoading ? 'CONNECTING & GOING TO DASHBOARD...' : 'CONNECT & GO TO DASHBOARD'}
                               </button>
                             </div>
                           )}
@@ -426,6 +475,7 @@ export function Landing({ address, balance, refreshBalance, createWallet, recove
                               rows={2}
                               placeholder="word1 word2 word3..."
                               value={recoverPhrase}
+                              disabled={connectLoading}
                               onChange={(e) => setRecoverPhrase(e.target.value.replace(/\s+/g, ' '))}
                               required
                             />
@@ -438,10 +488,10 @@ export function Landing({ address, balance, refreshBalance, createWallet, recove
                           )}
 
                           <div style={{ display: 'flex', gap: '8px' }}>
-                            <button type="submit" className="cyber-btn cyber-btn-primary" style={{ flex: 1, padding: '10px' }}>
-                              CONNECT WALLET
+                            <button type="submit" className="cyber-btn cyber-btn-primary" disabled={connectLoading} style={{ flex: 1, padding: '10px' }}>
+                              {connectLoading ? 'CONNECTING...' : 'CONNECT WALLET'}
                             </button>
-                            <button type="button" onClick={() => setFlowState('landing')} className="cyber-btn" style={{ width: '80px', padding: '10px' }}>
+                            <button type="button" onClick={() => setFlowState('landing')} disabled={connectLoading} className="cyber-btn" style={{ width: '80px', padding: '10px' }}>
                               CANCEL
                             </button>
                           </div>

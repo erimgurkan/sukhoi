@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import * as api from '../services/api';
+import { ethers } from 'ethers';
 
 export function useWallet() {
   const [address, setAddress] = useState(() => localStorage.getItem('sukhoi_wallet_address') || null);
@@ -35,17 +36,17 @@ export function useWallet() {
     }
   }, [address, refreshBalance]);
 
-  // Create new wallet
+  // Create new wallet completely client-side
   const createWallet = async () => {
     setLoading(true);
     setError(null);
     setMnemonic(null);
     try {
-      const data = await api.createWallet();
-      if (data.success) {
-        setMnemonic(data.mnemonic);
-        return data;
-      }
+      const wallet = ethers.Wallet.createRandom();
+      const derivedAddress = wallet.address;
+      const derivedMnemonic = wallet.mnemonic.phrase;
+      setMnemonic(derivedMnemonic);
+      return { success: true, address: derivedAddress, mnemonic: derivedMnemonic };
     } catch (err) {
       setError(err.message || 'Wallet creation failed');
       throw err;
@@ -54,18 +55,27 @@ export function useWallet() {
     }
   };
 
-  // Recover wallet from seed phrase
+  // Recover wallet from seed phrase client-side
   const recoverWallet = async (seedPhrase) => {
     setLoading(true);
     setError(null);
     setMnemonic(null);
     try {
-      const data = await api.recoverWallet(seedPhrase);
-      if (data.success) {
-        setAddress(data.address);
-        localStorage.setItem('sukhoi_wallet_address', data.address);
-        await refreshBalance(data.address);
-        return data;
+      const cleanMnemonic = seedPhrase.trim().replace(/\s+/g, ' ');
+      // Derive wallet locally and securely in the browser
+      const wallet = ethers.Wallet.fromPhrase(cleanMnemonic);
+      const derivedAddress = wallet.address;
+
+      // Verify and register the address on the backend (check if banned, etc.)
+      const checkData = await api.getWallet(derivedAddress);
+      if (checkData.success) {
+        setAddress(derivedAddress);
+        localStorage.setItem('sukhoi_wallet_address', derivedAddress);
+        setBalance(checkData.balance);
+        setTransactions(checkData.transactions || []);
+        return { success: true, address: derivedAddress };
+      } else {
+        throw new Error(checkData.message || 'Could not verify wallet with backend');
       }
     } catch (err) {
       setError(err.message || 'Wallet recovery failed');
