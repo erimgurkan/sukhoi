@@ -16,7 +16,7 @@ module.exports = {
   },
   admin: {
     username: process.env.ADMIN_USERNAME || 'admin',
-    passwordHash: process.env.ADMIN_PASSWORD_HASH || '$2a$12$LJ3m4ys3GzWnVxYHqSQpxeR3lQKjS7GkfPM3B3iU5xCQhGjGPkXy6'
+    passwordHash: process.env.ADMIN_PASSWORD_HASH || '$2a$10$sKRZGQJdGRKmpKG7FUVZe.Qg9bEoZmvzYnDQHQCZGJlHscz8B4RZ2'
   },
   cors: {
     origins: (process.env.CORS_ORIGINS || 'http://localhost:5173,http://localhost:5174').split(',')
